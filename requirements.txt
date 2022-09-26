@@ -1,0 +1,3 @@
+xmltodict
+requests
+python-telegram-bot# pip install python-telegram-bot -U --pre
