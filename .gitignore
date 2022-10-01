@@ -1,4 +1,5 @@
 load-config.sh
+load-config-dev.sh
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -129,7 +130,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-<<<<<<< HEAD
-
-=======
->>>>>>> b1e3e672ca23bdb9e72377411d00029fd94dfc37
