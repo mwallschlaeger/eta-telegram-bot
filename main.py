@@ -35,6 +35,11 @@ def main():
         "-l", "--log", help="Redirect logs to a given file in addition to the console.", metavar='')
     parser.add_argument("-t", "--telegram-token", default=os.environ.get("ETA_TELEGRAM_TOKEN"), dest="telegram_token", required=False,
                         help="telegram bot token ...", type=str, metavar='')
+    parser.add_argument("-n", "--notification-user-file", default=os.environ.get("ETA_TELEGRAM_NOTIFICATION_USERS_FILE"),
+                        dest="notify_user_file", required=True, help="path to file which stores used who activated notification service, got created if not existing ...")
+    parser.add_argument("-i", "--interval", default=30, dest="interval",
+                        required=False, help="interval of requests to the heater in seconds ..")
+
     parser.add_argument("-v", "--verbose", action='store_true',
                         help="Enable verbose logging")
     args = parser.parse_args()
@@ -55,17 +60,25 @@ def main():
     # Setup Telegram Bot
     logging.info("initialize telegram bot connection")
     app = ApplicationBuilder().token(telegram_token).build()
-    app.bot_data['started'] = False
-    app.bot_data['hostname'] = args.hostname
-    # app.add_handler(CommandHandler("status", gt.status))
-    # app.add_handler(CommandHandler("fehler", gt.error))
-    # app.add_handler(CommandHandler("start", gt.start))
-    # app.add_handler(CommandHandler("stop", gt.stop))
 
-    # app.add_handler(CommandHandler("cal", gt.cal_menu))
-    # app.add_handler(CallbackQueryHandler(gt.cal))
-    # app.add_handler(CommandHandler("hilfe", gt.hilfe))
-    # app.run_polling()
+    app.bot_data['hostname'] = args.hostname
+    app.bot_data['notify_user_file'] = args.notify_user_file
+    userlist = []
+    try:
+        with open(args.notify_user_file) as f:
+            userlist = userlist.readlines()
+            userlist = [line.rstrip() for line in userlist]
+    except:
+        pass
+    app.bot_data["notify_users"] = userlist
+    app.bot_data["error"] = []
+
+    app.job_queue.run_repeating(callback=gt.check_for_error_job,
+                                interval=args.interval,
+                                first=1,
+                                last=None,
+                                data={}
+                                )
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("menu", gt.menu)],
@@ -76,17 +89,19 @@ def main():
                 CallbackQueryHandler(
                     gt.error, pattern="^" + gt.MENU_ERROR + "$"),
                 CallbackQueryHandler(gt.menu, pattern="^" + gt.MENU + "$"),
-                
-                CallbackQueryHandler(gt.notification_menu, pattern="^" + gt.MENU_NOTIFICATION + "$"),
-                CallbackQueryHandler(gt.start, pattern="^" + gt.MENU_NOTIFCATION_START + "$"),
-                CallbackQueryHandler(gt.stop, pattern="^" + gt.MENU_NOTIFCATION_STOP + "$"),
+                CallbackQueryHandler(gt.notification_menu,
+                                     pattern="^" + gt.MENU_NOTIFICATION + "$"),
+                CallbackQueryHandler(
+                    gt.start, pattern="^" + gt.MENU_NOTIFCATION_START + "$"),
+                CallbackQueryHandler(
+                    gt.stop, pattern="^" + gt.MENU_NOTIFCATION_STOP + "$"),
 
                 # CallbackQueryHandler(gt.choose_date, pattern="^" + gt.MENU_CHOOSE + "$"),
                 # CallbackQueryHandler(gt.show_calendar, pattern="^" + gt.MENU_CALENDAR + "$"),
             ],
             gt.END_ROUTES: [
-               CallbackQueryHandler(gt.error, pattern="^" +"ERROR" + "$"),
-               #CallbackQueryHandler(end, pattern="^" + str(TWO) + "$"),
+                CallbackQueryHandler(gt.error, pattern="^" + "ERROR" + "$"),
+                #CallbackQueryHandler(end, pattern="^" + str(TWO) + "$"),
             ],
         },
         fallbacks=[CommandHandler("menu", gt.menu)],

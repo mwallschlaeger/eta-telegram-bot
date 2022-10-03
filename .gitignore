@@ -1,5 +1,6 @@
 load-config.sh
 load-config-dev.sh
+notification_users.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
