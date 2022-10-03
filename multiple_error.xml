@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<eta version="1.0" xmlns="http://www.eta.co.at/rest/v1">
+ <errors uri="/user/errors/24/10561">
+  <fub uri="/24/10561" name="Kessel">
+   <error priority="Warnung" msg="Notbetrieb ohne Zündungsüberwachung " time="2022-09-25 20:55:29">Wenn die Zündung repariert ist, dann muss der Notbetrieb wieder deaktiviert werden.</error>
+   <error priority="Nachricht" msg="Aschebox: Nicht am Kessel befestigt " time="2022-10-01 21:38:51">Die Verschlüsse an der Aschebox kontrollieren, diese müssen geschlossen sein.</error>
+  </fub>
+ </errors>
+</eta>
