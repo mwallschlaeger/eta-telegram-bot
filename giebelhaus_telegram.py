@@ -32,7 +32,7 @@ def __write_user_notification_file__(filename, userlist):
     """ write updated userlist if a user attaches or detaches to/from list"""
     userlist.sort()
     with open(filename, "w") as f:
-        f.writelines([str(user) for user in userlist])
+        f.writelines([str(user)+"\n" for user in userlist])
     return
 
 

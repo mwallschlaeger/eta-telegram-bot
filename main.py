@@ -2,6 +2,7 @@
 import argparse
 import logging
 import os
+import sys
 
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ConversationHandler
 import giebelhaus_telegram as gt
@@ -66,10 +67,11 @@ def main():
     userlist = []
     try:
         with open(args.notify_user_file) as f:
-            userlist = userlist.readlines()
-            userlist = [line.rstrip() for line in userlist]
+            userlist = f.readlines()
+            userlist = [int(line.rstrip()) for line in userlist]
     except:
-        pass
+        logging.error("Could not load userlist file ...")
+        sys.exit(1)
     app.bot_data["notify_users"] = userlist
     app.bot_data["error"] = []
 
