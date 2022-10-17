@@ -1,0 +1,9 @@
+[Unit]
+Description=Heating Telegram Bot
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /home/pi/bin/telegrambot.sh
+
+[Install]
+WantedBy=multi-user.target
