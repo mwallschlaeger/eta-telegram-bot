@@ -1,3 +1,4 @@
 xmltodict
 requests
-python-telegram-bot# pip install python-telegram-bot -U --pre
+sqlalchemy==2.0.0b2
+python-telegram-bot==20.0a4 # pip install python-telegram-bot -U --pre

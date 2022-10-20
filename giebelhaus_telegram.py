@@ -3,6 +3,7 @@
 from typing import List, Optional
 import requests
 import logging
+import datetime
 
 import xmltodict
 from telegram import Update
@@ -28,23 +29,18 @@ MENU_NOTIFCATION_STOP = "7"
 START_ROUTES, END_ROUTES = range(2)
 
 
-def __write_user_notification_file__(filename, userlist):
+def add_notification_user(user, engine):
     """ write updated userlist if a user attaches or detaches to/from list"""
-    userlist.sort()
-    with open(filename, "w") as f:
-        f.writelines([str(user)+"\n" for user in userlist])
-    return
-
-
-def add_notification_user(userlist, filename):
-    __write_user_notification_file__(filename=filename,
-                                     userlist=userlist)
-
-
-def del_notification_user(userlist, filename):
     try:
-        __write_user_notification_file__(filename=filename,
-                                         userlist=userlist)
+        users.insert().values(name="jack", fullname="Jack Jones")
+    except Exception as E:
+        logging.warning(
+            "could not remove {chat_id} from notify_users list ...\n{E}")
+
+
+def del_notification_user(user, engine):
+    try:
+        pass
     except Exception as E:
         logging.warning(
             "could not remove {chat_id} from notify_users list ...\n{E}")
@@ -281,6 +277,24 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     else:
         query = update.callback_query
         await query.edit_message_text(text="Und jetzt?:", reply_markup=reply_markup)
+    return START_ROUTES
+
+
+async def choose_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Show choose date CallbackQuery"""
+    query = update.callback_query
+    chat_id = update.effective_message.chat_id
+
+    text = "An welchem Tag möchtest du den Heizungsdienst übernehmen?"
+    keyboard = []
+    for i in range(7):
+        day = datetime.date.today() + datetime.timedelta(days=i)
+        day.strftime(format="%A: %d.%m.%y")
+        keyboard.append([InlineKeyboardButton(str(day.strftime(format='%A: %d.%m.%y')), callback_data="ZVEN")])
+    keyboard.append([InlineKeyboardButton("zurück", callback_data=MENU)])
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await query.edit_message_text(text=text, reply_markup=reply_markup)
     return START_ROUTES
 
 
