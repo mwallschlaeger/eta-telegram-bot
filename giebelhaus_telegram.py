@@ -142,10 +142,6 @@ async def check_for_error_job(context: ContextTypes.DEFAULT_TYPE) -> None:
     logging.debug(f"async task got: {str(current_error)}")
     message = ""
 
-    if current_error is None:
-        # something is wrong with the heater API
-        pass
-
     # new response == old response
     if current_error == last_error:
         logging.info("error|health state did not change ...")
@@ -153,7 +149,7 @@ async def check_for_error_job(context: ContextTypes.DEFAULT_TYPE) -> None:
     # if new response != old response and new response no error, write a message that the problem is solved
     elif current_error != last_error and current_error == []:
         logging.info(f"{str(last_error)}: --> solved ...")
-        message = f"Problem: {last_error['@msg']} gelöst! Wohoo"
+        message = f"Alle Warnungen und Probleme wurden behoben, Wohoo!"
     else:
         for e in current_error:
             message += f"{e['@priority']} | [{e['@time']}]: {e['@msg']} --> {e['#text']}"
